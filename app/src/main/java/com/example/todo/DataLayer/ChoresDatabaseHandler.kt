@@ -2,6 +2,7 @@ package com.example.todo.DataLayer
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
@@ -83,7 +84,7 @@ class ChoresDatabaseHandler(context: Context) :
 
     }
 
-    fun updateChore(chore:Chore)
+    fun updateChore(chore:Chore) : Int
     {
         var db: SQLiteDatabase = writableDatabase
         var values:ContentValues = ContentValues()
@@ -91,5 +92,23 @@ class ChoresDatabaseHandler(context: Context) :
         values.put(KEY_CHORE_ASSIGNED_BY,chore.assignedBy)
         values.put(KEY_CHORE_ASSIGNED_TO,chore.assignedTo)
         values.put(KEY_CHORE_ASSIGNED_TIME,System.currentTimeMillis())
+
+
+        //update a row from database
+        return  db.update(TABLE_NAME,values, KEY_CHORE_ID +"=?", arrayOf(chore.id.toString()))
+    }
+
+    fun deleteChore(chore: Chore)
+    {
+        var db: SQLiteDatabase = writableDatabase
+        db.delete(TABLE_NAME, KEY_CHORE_ID+"=?", arrayOf(chore.id.toString()))
+        db.close()
+    }
+
+    fun getChoresCount():Int{
+        var db:SQLiteDatabase = readableDatabase
+        var countQuery = "SELECT * from "+ TABLE_NAME
+        var cursor:Cursor = db.rawQuery(countQuery,null)
+        return  cursor.count
     }
 }
